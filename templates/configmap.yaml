@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-provisioning
+data:
+  dil.yaml: |
+    apiVersion: 1
+    datasources:
+{{- if .Values.datasource.enabled }}
+      - name: {{ .Values.datasource.name | quote }}
+        uid: {{ .Values.datasource.uid | quote }}
+        type: dataspacelab-dil-datasource
+        access: proxy
+        editable: true
+        jsonData:
+          connectorUrl: {{ required "datasource.connectorUrl is required" .Values.datasource.connectorUrl | quote }}
+          agreementId: {{ required "datasource.agreementId is required" .Values.datasource.agreementId | quote }}
+          datasetId: {{ required "datasource.datasetId is required" .Values.datasource.datasetId | quote }}
+          offerId: {{ required "datasource.offerId is required" .Values.datasource.offerId | quote }}
+          dashboardId: {{ required "datasource.dashboardId is required" .Values.datasource.dashboardId | quote }}
+        secureJsonData:
+          connectorToken: $DIL_CONNECTOR_TOKEN
+{{- else }}
+      []
+{{- end }}
+  apps.yaml: |
+    apiVersion: 1
+    apps:
+      - type: dataspacelab-dil-dashboard-app
+        org_id: 1
+        disabled: false

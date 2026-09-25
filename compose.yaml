@@ -1,0 +1,23 @@
+services:
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION:-13.0.1}
+    ports:
+      - "127.0.0.1:13000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: local-demo-only
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: dataspacelab-dil-datasource,dataspacelab-dil-dashboard-app
+      GF_PATHS_PLUGINS: /opt/dil-plugins
+    volumes:
+      - ./dev/provisioning:/etc/grafana/provisioning:ro
+      - ${PLUGIN_PATH:-../DIL-Grafana-Plugin-source/artifacts/dataspacelab-dil-datasource}:/opt/dil-plugins/dataspacelab-dil-datasource:ro
+      - ${DIL_DASHBOARD_APP_PLUGIN_PATH:-../DIL-Grafana-Plugin-source/artifacts/dataspacelab-dil-dashboard-app}:/opt/dil-plugins/dataspacelab-dil-dashboard-app:ro
+    depends_on:
+      - fixture
+  fixture:
+    image: python:3.12-slim
+    command: ["python", "/fixture/server.py"]
+    volumes:
+      - ./dev/server.py:/fixture/server.py:ro

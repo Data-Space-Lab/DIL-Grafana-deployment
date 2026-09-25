@@ -1,0 +1,6 @@
+apiVersion: v2
+name: dil-grafana
+description: Grafana with DIL datasource and dashboard-sharing plugins
+type: application
+version: 0.3.0
+appVersion: "13.0.1"

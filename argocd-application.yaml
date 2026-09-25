@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dil-grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Data-Space-Lab/DIL-Grafana-deployment.git
+    targetRevision: main
+    path: .
+    helm:
+      releaseName: dil-grafana
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dil-grafana
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

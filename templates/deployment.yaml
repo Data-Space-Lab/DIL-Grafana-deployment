@@ -1,0 +1,99 @@
+{{- $pluginSpecs := list -}}
+{{- if .Values.plugin.enabled -}}
+{{- range .Values.plugin.packages -}}
+{{- $pluginSpecs = append $pluginSpecs (printf "%s@%s@%s" .id .version (required (printf "plugin package %s.zipUrl is required" .id) .zipUrl)) -}}
+{{- end -}}
+{{- if eq (len $pluginSpecs) 0 -}}{{- fail "plugin.packages must contain at least one package when plugin.enabled is true" -}}{{- end -}}
+{{- end -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 472
+        runAsGroup: 472
+        fsGroup: 472
+        seccompProfile:
+          type: RuntimeDefault
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: grafana
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            {{- if .Values.plugin.enabled }}
+            - name: GF_PLUGINS_PREINSTALL_SYNC
+              value: {{ join "," $pluginSpecs | quote }}
+            {{- end }}
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.existingSecret }}, key: admin-user}
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.existingSecret }}, key: admin-password}
+            - name: DIL_CONNECTOR_TOKEN
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.existingSecret }}, key: connector-token}
+            - name: GF_SERVER_ROOT_URL
+              value: {{ .Values.grafana.rootUrl | quote }}
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"
+            - name: GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS
+              value: {{ if .Values.grafana.allowUnsignedPlugin }}{{ join "," .Values.grafana.allowUnsignedPlugins | quote }}{{ else }}""{{ end }}
+          startupProbe:
+            httpGet: {path: /api/health, port: http}
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet: {path: /api/health, port: http}
+          livenessProbe:
+            httpGet: {path: /api/health, port: http}
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: storage
+              mountPath: /var/lib/grafana
+            - name: provisioning
+              mountPath: /etc/grafana/provisioning/datasources/dil.yaml
+              subPath: dil.yaml
+            - name: provisioning
+              mountPath: /etc/grafana/provisioning/plugins/dil-dashboard-app.yaml
+              subPath: apps.yaml
+      volumes:
+        - name: storage
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: provisioning
+          configMap:
+            name: {{ .Release.Name }}-provisioning

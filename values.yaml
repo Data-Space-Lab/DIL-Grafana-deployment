@@ -1,0 +1,51 @@
+image:
+  repository: grafana/grafana
+  tag: "13.0.1"
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+plugin:
+  enabled: true
+  packages:
+    - id: dataspacelab-dil-datasource
+      version: "0.3.0"
+      zipUrl: "https://github.com/Data-Space-Core/DIL-Grafana-Plugin-source/releases/download/v0.3.0/dataspacelab-dil-datasource-0.3.0.zip"
+    - id: dataspacelab-dil-dashboard-app
+      version: "0.1.0"
+      zipUrl: "https://github.com/Data-Space-Core/DIL-Grafana-Plugin-source/releases/download/v0.3.0/dataspacelab-dil-dashboard-app-0.1.0.zip"
+# Must contain admin-user, admin-password, connector-token. Do not commit secrets.
+existingSecret: dil-grafana-credentials
+service:
+  port: 3000
+grafana:
+  rootUrl: "http://localhost:3000/"
+  allowUnsignedPlugin: true
+  allowUnsignedPlugins:
+    - dataspacelab-dil-datasource
+    - dataspacelab-dil-dashboard-app
+datasource:
+  enabled: false
+  uid: dil-dataspace
+  name: DIL Dataspace
+  # Consumer dataplane origin, without /grafana/consumer.
+  connectorUrl: ""
+  agreementId: ""
+  datasetId: ""
+  offerId: ""
+  dashboardId: ""
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClassName: ""
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 768Mi
+ingress:
+  enabled: false
+  className: ""
+  hostname: ""
+  tlsSecretName: ""
+  annotations: {}
