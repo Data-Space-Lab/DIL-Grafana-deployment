@@ -17,11 +17,18 @@ existingSecret: dil-grafana-credentials
 service:
   port: 3000
 grafana:
-  rootUrl: "http://localhost:3000/"
+  rootUrl: "https://grafana.material.dil.collab-cloud.eu/"
   allowUnsignedPlugin: true
   allowUnsignedPlugins:
     - dataspacelab-dil-datasource
     - dataspacelab-dil-dashboard-app
+  oauth:
+    enabled: true
+    clientId: dil-grafana
+    issuerUrl: "https://dil.collab-cloud.eu/auth/realms/material"
+    scopes: "openid profile email"
+    allowSignUp: true
+    usePkce: true
 datasource:
   enabled: false
   uid: dil-dataspace

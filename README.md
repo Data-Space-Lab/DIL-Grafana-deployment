@@ -32,12 +32,19 @@ operations; the command above exposes values briefly in process arguments.
 Never commit plaintext secret manifests. If the image is private, create a GHCR
 pull secret in this namespace and set `imagePullSecrets: [{name: ghcr-pull}]`.
 
+For the Material deployment, the `dil-grafana` Keycloak client and callback
+secret are provisioned separately. The chart reads `keycloak-client-id` and
+`keycloak-client-secret` from the same Secret and configures the tenant issuer
+`https://dil.collab-cloud.eu/auth/realms/material`. OAuth users receive Viewer
+access by default; assign the `grafana-editor` or `grafana-admin` realm role to
+grant the corresponding Grafana role.
+
 ## Values
 
 The Grafana image version and independent plugin package versions are in
-`values.yaml`.
-Set a real HTTPS
-`grafana.rootUrl`. Leave datasource.enabled=false to configure in Grafana's UI,
+`values.yaml`. Set `grafana.rootUrl` to the public Grafana URL. OAuth is enabled
+by default for the Material tenant; set `grafana.oauth` for another tenant.
+Leave datasource.enabled=false to configure in Grafana's UI,
 or enable it and supply connectorUrl, agreementId, datasetId, offerId and
 dashboardId. Secret token values are injected at runtime into secure datasource
 provisioning. The retained setting name `connectorUrl` points to the consumer
@@ -67,11 +74,10 @@ kubectl apply -f argocd-application.yaml
 ```
 
 Sync the `dil-grafana` application in the tenant's Argo CD. It targets that
-cluster's `https://kubernetes.default.svc`, not the host cluster. Set up an
-Ingress with ingress.enabled or use your existing Envoy RouteManagementUI to
-route the public Grafana hostname to service `dil-grafana`, namespace
-`dil-grafana`, port 3000. No public route or Keycloak client is created
-automatically. Configure Grafana OIDC separately using your tenant's policy.
+cluster's `https://kubernetes.default.svc`, not the host cluster. The Material
+host route is in `host-route.yaml` and must be applied to the host cluster's
+`infra-gateway` namespace. For another tenant, use the same backend service
+naming pattern and register the matching Keycloak redirect URI.
 
 For an initial check without a public route:
 
