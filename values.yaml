@@ -29,6 +29,7 @@ grafana:
     scopes: "openid profile email"
     allowSignUp: true
     usePkce: true
+    autoLogin: true
 datasource:
   enabled: false
   uid: dil-dataspace
