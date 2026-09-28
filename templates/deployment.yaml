@@ -5,6 +5,8 @@
 {{- end -}}
 {{- if eq (len $pluginSpecs) 0 -}}{{- fail "plugin.packages must contain at least one package when plugin.enabled is true" -}}{{- end -}}
 {{- end -}}
+{{- $catalogPluginSpecs := .Values.grafana.installPlugins | default (list) -}}
+{{- $allPluginSpecs := concat $pluginSpecs $catalogPluginSpecs -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -49,11 +51,7 @@ spec:
           env:
             {{- if .Values.plugin.enabled }}
             - name: GF_PLUGINS_PREINSTALL_SYNC
-              value: {{ join "," $pluginSpecs | quote }}
-            {{- end }}
-            {{- with .Values.grafana.installPlugins }}
-            - name: GF_INSTALL_PLUGINS
-              value: {{ join "," . | quote }}
+              value: {{ join "," $allPluginSpecs | quote }}
             {{- end }}
             - name: GF_SECURITY_ADMIN_USER
               valueFrom:
