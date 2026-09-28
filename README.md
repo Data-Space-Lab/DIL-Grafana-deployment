@@ -9,7 +9,7 @@ plugin is installed from the Grafana plugin catalog.
 ## Prepare
 
 1. The default values install datasource version 0.3.4 and dashboard app version
-   0.1.2 from the published HTTPS release. Keep these URLs pinned to reviewed
+   0.1.3 from the published HTTPS release. Keep these URLs pinned to reviewed
    artifacts when upgrading. The chart uses Grafana's synchronous plugin
    preinstall setting and provisions the dashboard app for organization 1.
 2. Push this folder to `Data-Space-Lab/DIL-Grafana-deployment` (or change repoURL
