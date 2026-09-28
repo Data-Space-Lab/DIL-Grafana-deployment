@@ -7,11 +7,11 @@ plugin:
   enabled: true
   packages:
     - id: dataspacelab-dil-datasource
-      version: "0.3.3"
+      version: "0.3.4"
       zipUrl: "https://github.com/Data-Space-Core/DIL-Grafana-Plugin-source/releases/download/v0.3.4/dataspacelab-dil-datasource-0.3.4.zip"
     - id: dataspacelab-dil-dashboard-app
       version: "0.1.2"
-      zipUrl: "https://github.com/Data-Space-Core/DIL-Grafana-Plugin-source/releases/download/v0.3.3/dataspacelab-dil-dashboard-app-0.1.2.zip"
+      zipUrl: "https://github.com/Data-Space-Core/DIL-Grafana-Plugin-source/releases/download/v0.3.4/dataspacelab-dil-dashboard-app-0.1.2.zip"
 # Must contain admin-user, admin-password, connector-token. Do not commit secrets.
 existingSecret: dil-grafana-credentials
 service:
