@@ -2,12 +2,13 @@
 
 Argo CD Helm chart and optional local test deployment for Grafana with the DIL
 datasource and dashboard-sharing plugins. Uses the official, unmodified Grafana
-image (13.0.1 by default). Both plugins are downloaded from the published
-`DIL-Grafana-Plugin-source` release during Grafana startup.
+image (13.0.1 by default). Both DIL plugins are downloaded from the published
+`DIL-Grafana-Plugin-source` release during Grafana startup. The Plotly panel
+plugin is installed from the Grafana plugin catalog.
 
 ## Prepare
 
-1. The default values install datasource version 0.3.3 and dashboard app version
+1. The default values install datasource version 0.3.4 and dashboard app version
    0.1.2 from the published HTTPS release. Keep these URLs pinned to reviewed
    artifacts when upgrading. The chart uses Grafana's synchronous plugin
    preinstall setting and provisions the dashboard app for organization 1.

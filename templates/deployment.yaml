@@ -51,6 +51,10 @@ spec:
             - name: GF_PLUGINS_PREINSTALL_SYNC
               value: {{ join "," $pluginSpecs | quote }}
             {{- end }}
+            {{- with .Values.grafana.installPlugins }}
+            - name: GF_INSTALL_PLUGINS
+              value: {{ join "," . | quote }}
+            {{- end }}
             - name: GF_SECURITY_ADMIN_USER
               valueFrom:
                 secretKeyRef: {name: {{ .Values.existingSecret }}, key: admin-user}

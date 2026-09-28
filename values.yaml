@@ -18,6 +18,8 @@ service:
   port: 3000
 grafana:
   rootUrl: "https://grafana.material.dil.collab-cloud.eu/"
+  installPlugins:
+    - ae3e-plotly-panel
   allowUnsignedPlugin: true
   allowUnsignedPlugins:
     - dataspacelab-dil-datasource
