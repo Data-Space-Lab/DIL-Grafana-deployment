@@ -52,7 +52,7 @@ resources:
     memory: 256Mi
     ephemeral-storage: 256Mi
   limits:
-    cpu: "1"
+    cpu: 100m
     memory: 768Mi
     ephemeral-storage: 1Gi
 ingress:
