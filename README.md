@@ -7,7 +7,7 @@ image (13.0.1 by default). Both plugins are downloaded from the published
 
 ## Prepare
 
-1. The default values install datasource version 0.3.2 and dashboard app version
+1. The default values install datasource version 0.3.3 and dashboard app version
    0.1.2 from the published HTTPS release. Keep these URLs pinned to reviewed
    artifacts when upgrading. The chart uses Grafana's synchronous plugin
    preinstall setting and provisions the dashboard app for organization 1.
